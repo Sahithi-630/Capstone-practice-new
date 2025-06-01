@@ -3,11 +3,16 @@ import React, { useState } from 'react';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Login submitted:', { email, password });
-    // Add your login logic here
+    // Example: simple check for demo purposes
+    if (email === 'user@example.com' && password === 'password123') {
+      setMessage('Login successful');
+    } else {
+      setMessage('Invalid email or password');
+    }
   };
 
   return (
@@ -34,6 +39,7 @@ const Login = () => {
         </div>
         <button type="submit">Login</button>
       </form>
+      {message && <p>{message}</p>}
     </div>
   );
 };

@@ -5,16 +5,18 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const navigate = useNavigate(); // Hook to navigate between pages
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+      setMessage('Passwords do not match!');
       return;
     }
-    console.log('Signup submitted:', { email, password });
-    // Add your signup logic here
+    // Simulate signup success
+    setMessage('Signup successful');
+    // Add your actual signup logic here
   };
 
   return (
@@ -50,6 +52,7 @@ const Signup = () => {
         </div>
         <button type="submit">Signup</button>
       </form>
+      {message && <p>{message}</p>}
       <div className="navigation-buttons">
         <button onClick={() => navigate('/login')}>Go to Login</button>
       </div>
