@@ -7,6 +7,7 @@ import Dashboard from './components/DashBoard';
 import Companywisequestions from "./components/CompanyWiseQuestions";
 import JobBoard from './components/JobBoard';
 import ResumeReview from './components/ResumeReview';
+import AiInterview from './components/AiInterview';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/company-wise-questions" element={<Companywisequestions />} />
         <Route path='/job-board' element={<JobBoard />} />
         <Route path ="/resume-review" element={<ResumeReview />} />
+        <Route path="/ai-mock-interview" element={<AiInterview />} />
       </Routes>
     </Router>
   );
