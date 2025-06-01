@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Signup from './components/SignUp';
 import Dashboard from './components/DashBoard';
 import Companywisequestions from "./components/CompanyWiseQuestions";
+import JobBoard from './components/JobBoard';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/company-wise-questions" element={<Companywisequestions />} />
+        <Route path='/job-board' element={<JobBoard />} />
       </Routes>
     </Router>
   );
