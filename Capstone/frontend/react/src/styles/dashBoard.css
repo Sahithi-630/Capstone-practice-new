@@ -1,0 +1,43 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 3rem;
+  min-height: 100vh;
+  background: linear-gradient(to right, #1e3c72, #2a5298);
+  justify-items: center;
+  align-items: center;
+}
+
+.card {
+  width: 200px;
+  height: 220px;
+  background-color: #f2f2f2;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  background-color: #ccc;
+  
+  margin-bottom: 1rem;
+  border-radius: 10px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
