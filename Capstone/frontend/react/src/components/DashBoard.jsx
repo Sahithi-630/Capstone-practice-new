@@ -1,32 +1,34 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import '../styles/dashBoard.css';
 
-const DashBoard = () => {
-  const navigate = useNavigate();
-
-  return (
-    <div style={{ maxWidth: 500, margin: "40px auto", textAlign: "center" }}>
-      <h2>Dashboard</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "2rem" }}>
-        <button style={buttonStyle} onClick={() => navigate('/ai-mock-interview')}>AI Mock Interview</button>
-        <button style={buttonStyle} onClick={() => navigate('/job-board')}>Job Board</button>
-        <button style={buttonStyle} onClick={() => navigate('/company-wise-questions')}>Company Wise Questions</button>
-        <button style={buttonStyle} onClick={() => navigate('/resume-review')}>Resume Review</button>
+const Dashboard = () => (
+  <div className="center-content">
+    <div className="dashboard-container">
+      <div className="dashboard-header">Welcome to Your Dashboard</div>
+      <div className="dashboard-cards">
+        <div className="dashboard-card">
+          <div className="dashboard-card-title">Resume Review</div>
+          <div className="dashboard-card-desc">Get instant feedback on your resume.</div>
+          <a href="/resume-review" className="dashboard-card-action">Review Now</a>
+        </div>
+        <div className="dashboard-card">
+          <div className="dashboard-card-title">AI Mock Interview</div>
+          <div className="dashboard-card-desc">Practice and get AI-powered interview analysis.</div>
+          <a href="/ai-mock-interview" className="dashboard-card-action">Start Interview</a>
+        </div>
+        <div className="dashboard-card">
+          <div className="dashboard-card-title">Job Board</div>
+          <div className="dashboard-card-desc">Find and apply for jobs.</div>
+          <a href="/job-board" className="dashboard-card-action">View Jobs</a>
+        </div>
+        <div className="dashboard-card">
+          <div className="dashboard-card-title">Company Questions</div>
+          <div className="dashboard-card-desc">Practice company-wise interview questions.</div>
+          <a href="/company-wise-questions" className="dashboard-card-action">Practice Now</a>
+        </div>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
-const buttonStyle = {
-  padding: "1rem",
-  fontSize: "1.1rem",
-  borderRadius: "8px",
-  border: "none",
-  background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
-  color: "#fff",
-  cursor: "pointer",
-  fontWeight: "bold",
-  transition: "background 0.3s",
-};
-
-export default DashBoard;
+export default Dashboard;

@@ -23,7 +23,7 @@ function Home() {
         </header>
 
         <section className="hero-section">
-          <h2>Intervuze</h2>
+          <h1>Intervuze</h1>
           <p>Your dream job starts here - Prepare, practice, succeed!</p>
           
           {/* ✅ Updated button to redirect to dashboard */}

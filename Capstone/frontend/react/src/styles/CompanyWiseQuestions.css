@@ -1,0 +1,160 @@
+.cwq-container {
+  min-height: 100vh;              /* Cover full viewport height */
+  width: 100vw;                   /* Cover full viewport width */
+  max-width: none;                /* Remove max-width restriction */
+  margin: 0;                      /* Remove margin */
+  padding: 0;                     /* Remove padding */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;        /* Vertical center */
+  align-items: center;            /* Horizontal center */
+  background: #f9fafb;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.cwq-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 32px;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.cwq-company-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cwq-company-btn {
+  width: 320px;
+  min-height: 90px;
+  padding: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  background: #fff;
+  color: #3182ce;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(49,130,206,0.10), 0 1.5px 4px rgba(0,0,0,0.03);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.01em;
+}
+
+.cwq-company-btn:hover, .cwq-company-btn:focus {
+  background: #3182ce;
+  color: #fff;
+  box-shadow: 0 8px 28px rgba(49,130,206,0.13);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.cwq-back-btn {
+  margin-top: 28px;
+  padding: 12px 28px;
+  background: #e2e8f0;
+  color: #2d3748;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.cwq-back-btn:hover {
+  background: #cbd5e1;
+  color: #1a202c;
+}
+
+/* ...existing company list styles above... */
+
+.cwq-question-card {
+  margin: 36px 0 28px 0;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f7fafc 80%, #e3e8ee 100%);
+  box-shadow: 0 8px 32px rgba(49,130,206,0.10);
+  transition: box-shadow 0.2s;
+  max-width: 430px;
+  width: 100%;
+}
+
+.cwq-question {
+  font-weight: 700;
+  font-size: 1.18rem;
+  color: #2d3748;
+  margin-bottom: 20px;
+  letter-spacing: 0.01em;
+}
+
+.cwq-options-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cwq-option-btn {
+  width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #e2e8f0;
+  color: #2d3748;
+  font-size: 1.08rem;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.cwq-option-btn.selected,
+.cwq-option-btn:hover {
+  background: #3182ce;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(49,130,206,0.13);
+}
+
+.cwq-nav-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.cwq-nav-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #e2e8f0;
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cwq-nav-btn.primary {
+  background: #3182ce;
+  color: #fff;
+}
+
+.cwq-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cwq-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #3182ce;
+  margin-bottom: 22px;
+}

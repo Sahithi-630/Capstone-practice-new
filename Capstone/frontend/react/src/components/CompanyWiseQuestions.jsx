@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import '../styles/companyWiseQuestions.css';
 
+// ...existing questions and companyQuestionsMap...
 const companies = [
   "Apple",
   "Google",
@@ -61,7 +63,7 @@ const appleQuestions =[
     "answer": "A mechanism for one object to communicate back to another"
   },
   {
-    "question": "What is the purpose of the `@IBOutlet` keyword in Swift?",
+    "question": "What is the purpose of the @IBOutlet keyword in Swift?",
     "options": ["To declare a Swift package", "To connect a UI element to code", "To perform data encryption", "To import external libraries"],
     "answer": "To connect a UI element to code"
   },
@@ -416,7 +418,7 @@ const amazonQuestions = [
     "answer": "Memoization"
   },
   {
-    "question": "Which of the following is **NOT** an Amazon Leadership Principle?",
+    "question": "Which of the following is *NOT* an Amazon Leadership Principle?",
     "options": ["Customer Obsession", "Dive Deep", "Bias for Action", "Always Be Closing"],
     "answer": "Always Be Closing"
   },
@@ -730,7 +732,7 @@ const netflixQuestions = [
     "answer": "Insertion Sort"
   },
   {
-    "question": "Which principle is **not** part of Netflix's core values?",
+    "question": "Which principle is *not* part of Netflix's core values?",
     "options": ["Integrity", "Excellence", "Speed over quality", "Innovation"],
     "answer": "Speed over quality"
   },
@@ -895,7 +897,7 @@ const intelQuestions =[
     "answer": "Speed up memory access"
   },
   {
-    "question": "Which of the following is **not** a type of cache?",
+    "question": "Which of the following is *not* a type of cache?",
     "options": ["L1", "L2", "L3", "L4"],
     "answer": "L4"
   },
@@ -935,7 +937,7 @@ const intelQuestions =[
     "answer": "Memory efficiency"
   },
   {
-    "question": "What is the size of an `int` on a 64-bit Intel processor (typically)?",
+    "question": "What is the size of an int on a 64-bit Intel processor (typically)?",
     "options": ["2 bytes", "4 bytes", "8 bytes", "16 bytes"],
     "answer": "4 bytes"
   },
@@ -1035,7 +1037,7 @@ const teslaQuestions = [
     "answer": "Production ramp-up"
   },
   {
-    "question": "Which sensor is **not** typically used in Tesla's Autopilot hardware?",
+    "question": "Which sensor is *not* typically used in Tesla's Autopilot hardware?",
     "options": ["Ultrasonic", "Radar", "Camera", "LiDAR"],
     "answer": "LiDAR"
   },
@@ -1245,18 +1247,19 @@ const companyQuestionsMap = {
   Salesforce: salesforceQuestions
 };
 
+
 const CompanyWiseQuestions = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
 
   if (!selectedCompany) {
     return (
-      <div className="p-6 max-w-xl mx-auto">
-        <h2 className="text-xl font-semibold mb-3">Select a Company</h2>
-        <div className="flex flex-wrap gap-3 justify-center">
+      <div className="cwq-container">
+        <h2 className="cwq-title">Select a Company</h2>
+        <div className="cwq-company-list">
           {companies.map(company => (
             <button
               key={company}
-              className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+              className="cwq-company-btn"
               onClick={() => setSelectedCompany(company)}
             >
               {company}
@@ -1280,11 +1283,11 @@ const CompanyWiseQuestions = () => {
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto text-center">
-      <h2 className="text-xl font-semibold mb-3">{selectedCompany} Interview MCQ</h2>
+    <div className="cwq-container text-center">
+      <h2 className="cwq-title">{selectedCompany} Interview MCQ</h2>
       <p>Questions for {selectedCompany} are not available yet.</p>
       <button
-        className="mt-4 px-4 py-2 rounded bg-gray-400 text-white"
+        className="cwq-back-btn"
         onClick={() => setSelectedCompany(null)}
       >
         Back to Companies
@@ -1324,13 +1327,13 @@ const MCQTest = ({ questions, company, onBack }) => {
 
   if (showScore) {
     return (
-      <div className="p-6 text-center">
-        <h2 className="text-2xl font-bold mb-4">Test Completed!</h2>
-        <p className="text-xl mb-4">Your Score: {score} / {questions.length}</p>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={handleRestart}>
+      <div className="cwq-container text-center">
+        <h2 className="cwq-title">Test Completed!</h2>
+        <p className="cwq-score">Your Score: {score} / {questions.length}</p>
+        <button className="cwq-company-btn" onClick={handleRestart}>
           Restart Test
         </button>
-        <button className="ml-2 px-4 py-2 bg-gray-400 text-white rounded" onClick={onBack}>
+        <button className="cwq-back-btn" onClick={onBack}>
           Back to Companies
         </button>
       </div>
@@ -1340,20 +1343,18 @@ const MCQTest = ({ questions, company, onBack }) => {
   const q = questions[current];
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <button className="mb-4 px-4 py-2 bg-gray-400 text-white rounded" onClick={onBack}>
+    <div className="cwq-container">
+      <button className="cwq-back-btn" onClick={onBack}>
         Back to Companies
       </button>
-      <h2 className="text-xl font-semibold mb-3">{company} Interview MCQ</h2>
-      <div className="mb-4 p-4 border rounded shadow">
-        <p className="mb-3 font-bold">{current + 1}. {q.question}</p>
-        <ul>
+      <h2 className="cwq-title">{company} Interview MCQ</h2>
+      <div className="cwq-question-card">
+        <p className="cwq-question">{current + 1}. {q.question}</p>
+        <ul className="cwq-options-list">
           {q.options.map((opt, idx) => (
-            <li key={idx} className="mb-2">
+            <li key={idx}>
               <button
-                className={`px-4 py-2 rounded border w-full text-left ${
-                  selected === opt ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
+                className={`cwq-option-btn${selected === opt ? ' selected' : ''}`}
                 onClick={() => handleOptionClick(opt)}
               >
                 {opt}
@@ -1362,18 +1363,18 @@ const MCQTest = ({ questions, company, onBack }) => {
           ))}
         </ul>
       </div>
-      <div className="flex gap-2">
+      <div className="cwq-nav-btns">
         <button
           onClick={handlePrev}
           disabled={current === 0}
-          className="px-3 py-1 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
+          className="cwq-nav-btn"
         >
           Previous
         </button>
         <button
           onClick={handleNext}
           disabled={selected === null}
-          className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50"
+          className="cwq-nav-btn primary"
         >
           {current === questions.length - 1 ? "Finish" : "Next"}
         </button>
