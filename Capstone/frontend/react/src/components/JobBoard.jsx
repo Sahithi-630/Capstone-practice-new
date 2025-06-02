@@ -4,12 +4,6 @@ import '../styles/JobBoard.css';
 const JobBoard = () => {
   const jobs = [
     {
-      role: "UI/UX Designer",
-      company: "DXC",
-      salary: "5 Lakhs",
-      location: "Chennai"
-    },
-    {
       role: "Software Engineer",
       company: "Apple",
       salary: "$130,000 - $170,000",
