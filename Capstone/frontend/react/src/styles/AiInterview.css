@@ -1,0 +1,92 @@
+.ai-interview-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.ai-interview-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(49,130,206,0.10);
+  padding: 48px 40px;
+  max-width: 500px;
+  width: 100%;
+  margin: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ai-interview-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 32px;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.ai-interview-btn-group {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.ai-interview-btn,
+.ai-interview-analyze-btn {
+  padding: 12px 24px;
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ai-interview-btn:disabled,
+.ai-interview-analyze-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-interview-btn:hover:enabled,
+.ai-interview-analyze-btn:hover:enabled {
+  background: #225ea8;
+}
+
+.ai-interview-upload {
+  margin: 18px 0 12px 0;
+  width: 100%;
+  text-align: center;
+}
+
+.ai-interview-video {
+  display: block;
+  margin: 0 auto 18px auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(49,130,206,0.08);
+  background: #000;
+}
+
+.ai-interview-score {
+  margin-top: 24px;
+  color: #3182ce;
+  font-size: 1.18rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ai-interview-feedback {
+  margin-top: 14px;
+  color: #2d3748;
+  font-size: 1.08rem;
+  text-align: center;
+  line-height: 1.6;
+}

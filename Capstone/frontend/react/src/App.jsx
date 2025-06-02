@@ -18,8 +18,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/company-wise-questions" element={<Companywisequestions />} />
-        <Route path='/job-board' element={<JobBoard />} />
-        <Route path ="/resume-review" element={<ResumeReview />} />
+        <Route path="/job-board" element={<JobBoard />} />
+        <Route path="/resume-review" element={<ResumeReview />} />
         <Route path="/ai-mock-interview" element={<AiInterview />} />
       </Routes>
     </Router>

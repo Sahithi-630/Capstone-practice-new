@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import '../styles/AiInterview.css'; // Ensure you have the CSS file for styling
 
 const AiInterview = () => {
   const [videoFile, setVideoFile] = useState(null);
