@@ -8,7 +8,7 @@
   flex-direction: column;
   justify-content: center;        /* Vertical center */
   align-items: center;            /* Horizontal center */
-  background: #f9fafb;
+  background: #e7eff7;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
@@ -48,8 +48,8 @@
 }
 
 .cwq-company-btn:hover, .cwq-company-btn:focus {
-  background: #3182ce;
-  color: #fff;
+  background: #9ecffc;
+  color: #2f548d;
   box-shadow: 0 8px 28px rgba(49,130,206,0.13);
   transform: translateY(-2px) scale(1.03);
 }
@@ -144,7 +144,7 @@
 
 .cwq-nav-btn.primary {
   background: #3182ce;
-  color: #fff;
+  color: #f5dada;
 }
 
 .cwq-nav-btn:disabled {

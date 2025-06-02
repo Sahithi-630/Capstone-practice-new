@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/ResumeReview.css'; // Assuming you have a CSS file for styling
 
 const ResumeReview = () => {
   const [file, setFile] = useState(null);
