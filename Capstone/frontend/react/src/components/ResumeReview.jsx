@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/ResumeReview.css'; // Assuming you have a CSS file for styling
+import '../styles/ResumeReview.css';
 
 const ResumeReview = () => {
   const [file, setFile] = useState(null);
@@ -11,39 +11,58 @@ const ResumeReview = () => {
     setFeedback('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setFeedback('Please upload a resume file.');
+      setFeedback('Please upload a resume PDF file.');
       return;
     }
     setLoading(true);
-    // Simulate analysis delay
-    setTimeout(() => {
-      setLoading(false);
-      setFeedback(
-        'Resume Review: Your resume is well-structured. Consider adding more details to your work experience and highlighting your technical skills.'
-      );
-    }, 2000);
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/resume-review', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setFeedback(data.feedback || 'Upload failed. Please try again.');
+      } else {
+        setFeedback(data.feedback || 'No feedback received.');
+      }
+    } catch (err) {
+      setFeedback('Error uploading file. Please try again.');
+    }
+    setLoading(false);
   };
 
   return (
-    <div className="container">
-      <h2>Resume Review</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Upload Resume (PDF/DOCX):</label>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileChange}
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Analyzing...' : 'Analyze Resume'}
-        </button>
-      </form>
-      {feedback && <div style={{ marginTop: '20px' }}><strong>{feedback}</strong></div>}
+    <div className="resume-review-container">
+      <div className="resume-review-card">
+        <h2 className="resume-review-title">Resume Review</h2>
+        <form className="resume-review-form" onSubmit={handleSubmit}>
+          <label>
+            Upload Resume (PDF):
+            <input
+              className="resume-review-input"
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              name="resume"
+            />
+          </label>
+          <button className="resume-review-btn" type="submit" disabled={loading}>
+            {loading ? 'Analyzing...' : 'Analyze Resume'}
+          </button>
+        </form>
+        {feedback && (
+          <div className="resume-review-feedback">
+            <strong>{feedback}</strong>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1384,3 +1384,4 @@ const MCQTest = ({ questions, company, onBack }) => {
 };
 
 export default CompanyWiseQuestions;
+
