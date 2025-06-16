@@ -1,5 +1,19 @@
 import React, { useRef, useState } from 'react';
-import '../styles/AiInterview.css'; // Ensure you have the CSS file for styling
+import '../styles/AiInterview.css';
+
+const questions = [
+  "Tell us about yourself.",
+  "Why do you want this job?",
+  "Describe a challenge you overcame."
+];
+
+const feedbackSamples = [
+  "Great confidence and clear communication. Try to add more examples.",
+  "Good structure, but work on your body language.",
+  "Nice answer! Try to be more concise and focused.",
+  "You answered well, but try to maintain eye contact.",
+  "Good effort! Speak a bit slower for clarity."
+];
 
 const AiInterview = () => {
   const [videoFile, setVideoFile] = useState(null);
@@ -9,10 +23,12 @@ const AiInterview = () => {
   const [feedback, setFeedback] = useState('');
   const [score, setScore] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [finished, setFinished] = useState(false);
+
   const videoRef = useRef(null);
   const chunks = useRef([]);
 
-  // Start recording from webcam
   const startRecording = async () => {
     setFeedback('');
     setScore(null);
@@ -38,14 +54,12 @@ const AiInterview = () => {
     recorder.start();
   };
 
-  // Stop recording
   const stopRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
   };
 
-  // Handle video file upload
   const handleFileChange = (e) => {
     setFeedback('');
     setScore(null);
@@ -56,7 +70,6 @@ const AiInterview = () => {
     }
   };
 
-  // Simulate analysis
   const handleAnalyze = (e) => {
     e.preventDefault();
     if (!videoFile) {
@@ -66,31 +79,104 @@ const AiInterview = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setScore(Math.floor(Math.random() * 41) + 60); // Random score between 60-100
-      setFeedback('Feedback: Good eye contact and clear answers. Try to reduce filler words and improve your confidence.');
-    }, 2000);
+      const randomFeedback = feedbackSamples[Math.floor(Math.random() * feedbackSamples.length)];
+      const randomScore = Math.floor(Math.random() * 41) + 60;
+      setScore(randomScore);
+      setFeedback(randomFeedback);
+    }, 1500);
   };
 
-  return (
-    <div className="container">
-      <h2>AI Interview Practice</h2>
-      <div>
-        <button onClick={startRecording} disabled={recording}>Record Video</button>
-        <button onClick={stopRecording} disabled={!recording}>Stop Recording</button>
+  const handleNext = () => {
+    setFeedback('');
+    setScore(null);
+    setVideoURL('');
+    setVideoFile(null);
+    setCurrentQuestion((prev) => prev + 1);
+  };
+
+  const handleFinish = () => {
+    setFinished(true);
+  };
+
+  if (finished) {
+    return (
+      <div className="aii-container">
+        <h2>AI Interview Practice</h2>
+        <p className="aii-complete">🎉 Congratulations! You have completed the Interview.</p>
       </div>
-      <div style={{ margin: '10px 0' }}>
+    );
+  }
+
+  if (currentQuestion >= questions.length) {
+    return (
+      <div className="aii-container">
+        <h2>AI Interview Practice</h2>
+        <p className="aii-complete">🎉 You've completed all questions!</p>
+        <button className="aii-analyze-btn" onClick={handleFinish}>Finish</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="aii-container">
+      <h2>AI Interview Practice</h2>
+
+      <div className="aii-question-box">
+        <span className="question-number" style={{ fontWeight: 'bold', marginRight: 6 }}>
+          Question {currentQuestion + 1}:
+        </span>
+        <span className="question-text">{questions[currentQuestion] || "Question not found!"}</span>
+      </div>
+
+      <div className="aii-btn-row">
+        <button className="aii-btn" onClick={startRecording} disabled={recording}>
+          Record Video
+        </button>
+        <button className="aii-btn" onClick={stopRecording} disabled={!recording}>
+          Stop Recording
+        </button>
+      </div>
+
+      <div className="aii-upload-row">
         <input type="file" accept="video/*" onChange={handleFileChange} />
       </div>
+
       {videoURL && (
-        <video src={videoURL} controls width="400" style={{ display: 'block', marginBottom: '10px' }} />
+        <video src={videoURL} controls width="400" className="aii-video" />
       )}
+
       <form onSubmit={handleAnalyze}>
-        <button type="submit" disabled={loading || !videoFile}>
+        <button className="aii-analyze-btn" type="submit" disabled={loading || !videoFile}>
           {loading ? 'Analyzing...' : 'Analyze Video'}
         </button>
       </form>
-      {score !== null && <div style={{ marginTop: '20px' }}><strong>Score: {score}/100</strong></div>}
-      {feedback && <div style={{ marginTop: '10px' }}><strong>{feedback}</strong></div>}
+
+      {score !== null && (
+        <div className="aii-score">
+          <strong>Score: {score}/100</strong>
+        </div>
+      )}
+
+      {feedback && (
+        <div className="aii-feedback">
+          <strong>{feedback}</strong>
+          {currentQuestion < questions.length - 1 && (
+            <div>
+              <button className="aii-next-btn" onClick={handleNext}>
+                Next Question
+              </button>
+            </div>
+          )}
+          {currentQuestion === questions.length - 1 && (
+            <div>
+              <button className="aii-next-btn" onClick={handleFinish}>
+                Finish
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <video ref={videoRef} style={{ display: 'none' }} />
     </div>
   );

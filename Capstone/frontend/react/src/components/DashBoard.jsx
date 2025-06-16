@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/dashBoard.css';
 
+
 const Dashboard = () => (
   <div className="center-content">
     <div className="dashboard-container">
@@ -30,5 +31,6 @@ const Dashboard = () => (
     </div>
   </div>
 );
+
 
 export default Dashboard;
