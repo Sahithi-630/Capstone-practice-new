@@ -1,6 +1,16 @@
 import React from 'react';
 import '../styles/JobBoard.css';
 
+// Map company names to their official careers page URLs
+const companyCareerLinks = {
+  Apple: "https://jobs.apple.com/",
+  Google: "https://careers.google.com/jobs/results/",
+  Microsoft: "https://careers.microsoft.com/us/en",
+  Amazon: "https://www.amazon.jobs/en/",
+  IBM: "https://www.ibm.com/employment/",
+  Facebook: "https://www.metacareers.com/jobs/",
+};
+
 const JobBoard = () => {
   const jobs = [
     {
@@ -48,9 +58,33 @@ const JobBoard = () => {
         {jobs.map((job, index) => (
           <div key={index} className="jobboard-card">
             <div className="jobboard-card-title">{job.role}</div>
-            <div className="jobboard-card-desc"><b>Company:</b> {job.company}</div>
+            <div className="jobboard-card-desc">
+              <b>Company:</b>{" "}
+              {companyCareerLinks[job.company] ? (
+                <a
+                  href={companyCareerLinks[job.company]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#1976d2", textDecoration: "underline", cursor: "pointer" }}
+                >
+                  {job.company}
+                </a>
+              ) : (
+                job.company
+              )}
+            </div>
             <div className="jobboard-card-desc"><b>Salary:</b> {job.salary}</div>
-            <div className="jobboard-card-desc"><b>Location:</b> {job.location}</div>
+            <div className="jobboard-card-desc">
+              <b>Location:</b>{" "}
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(job.location)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#1976d2", textDecoration: "underline", cursor: "pointer" }}
+              >
+                {job.location}
+              </a>
+            </div>
           </div>
         ))}
       </div>

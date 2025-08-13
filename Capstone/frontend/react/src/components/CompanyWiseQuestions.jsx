@@ -1,20 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/companyWiseQuestions.css';
 
-// ...existing questions and companyQuestionsMap...
-const companies = [
-  "Apple",
-  "Google",
-  "Microsoft",
-  "Amazon",
-  "Facebook",
-  "Netflix",
-  "Adobe",
-  "Intel",
-  "Tesla",
-  "Salesforce"
-];
-
 // --- Apple ---
 const appleQuestions =[
   {
@@ -1234,6 +1220,19 @@ const salesforceQuestions = [
 ]
 
 
+const companies = [
+  "Apple",
+  "Google",
+  "Microsoft",
+  "Amazon",
+  "Facebook",
+  "Netflix",
+  "Adobe",
+  "Intel",
+  "Tesla",
+  "Salesforce"
+];
+
 const companyQuestionsMap = {
   Apple: appleQuestions,
   Google: googleQuestions,
@@ -1247,9 +1246,24 @@ const companyQuestionsMap = {
   Salesforce: salesforceQuestions
 };
 
-
 const CompanyWiseQuestions = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [randomQuestions, setRandomQuestions] = useState([]);
+
+  // Helper to get N random, non-repeating questions
+  function getRandomQuestions(arr, n = 5) {
+    const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(n, arr.length));
+  }
+
+  React.useEffect(() => {
+    if (selectedCompany) {
+      const questions = companyQuestionsMap[selectedCompany];
+      if (questions && questions.length > 0) {
+        setRandomQuestions(getRandomQuestions(questions, 5));
+      }
+    }
+  }, [selectedCompany]);
 
   if (!selectedCompany) {
     return (
@@ -1270,12 +1284,10 @@ const CompanyWiseQuestions = () => {
     );
   }
 
-  const questions = companyQuestionsMap[selectedCompany];
-
-  if (questions && questions.length > 0) {
+  if (randomQuestions && randomQuestions.length > 0) {
     return (
       <MCQTest
-        questions={questions}
+        questions={randomQuestions}
         company={selectedCompany}
         onBack={() => setSelectedCompany(null)}
       />
@@ -1384,4 +1396,3 @@ const MCQTest = ({ questions, company, onBack }) => {
 };
 
 export default CompanyWiseQuestions;
-

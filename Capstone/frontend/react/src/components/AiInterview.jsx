@@ -1,21 +1,18 @@
 import React, { useRef, useState } from 'react';
 import '../styles/AiInterview.css';
 
-const questions = [
-  "Tell us about yourself.",
-  "Why do you want this job?",
-  "Describe a challenge you overcame."
-];
-
-const feedbackSamples = [
-  "Great confidence and clear communication. Try to add more examples.",
-  "Good structure, but work on your body language.",
-  "Nice answer! Try to be more concise and focused.",
-  "You answered well, but try to maintain eye contact.",
-  "Good effort! Speak a bit slower for clarity."
+const roles = [
+  { value: '', label: 'Select Role' },
+  { value: 'software-engineer', label: 'Software Engineer' },
+  { value: 'data-scientist', label: 'Data Scientist' },
+  // Add more roles as needed
 ];
 
 const AiInterview = () => {
+  const [role, setRole] = useState('');
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [finished, setFinished] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -23,11 +20,27 @@ const AiInterview = () => {
   const [feedback, setFeedback] = useState('');
   const [score, setScore] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [finished, setFinished] = useState(false);
 
   const videoRef = useRef(null);
   const chunks = useRef([]);
+
+  // Fetch questions when role changes
+  const handleRoleChange = async (e) => {
+    const selectedRole = e.target.value;
+    setRole(selectedRole);
+    setQuestions([]);
+    setCurrentQuestion(0);
+    setFinished(false);
+    setFeedback('');
+    setScore(null);
+    setVideoURL('');
+    setVideoFile(null);
+    if (selectedRole) {
+      const res = await fetch(`http://localhost:5000/api/interview-questions/${selectedRole}`);
+      const data = await res.json();
+      setQuestions(data.questions || []);
+    }
+  };
 
   const startRecording = async () => {
     setFeedback('');
@@ -70,20 +83,35 @@ const AiInterview = () => {
     }
   };
 
-  const handleAnalyze = (e) => {
+  const handleAnalyze = async (e) => {
     e.preventDefault();
     if (!videoFile) {
       setFeedback('Please record or upload a video first.');
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      const randomFeedback = feedbackSamples[Math.floor(Math.random() * feedbackSamples.length)];
-      const randomScore = Math.floor(Math.random() * 41) + 60;
-      setScore(randomScore);
-      setFeedback(randomFeedback);
-    }, 1500);
+    const formData = new FormData();
+    formData.append('video', videoFile);
+    formData.append('question', questions[currentQuestion]); // send question
+
+    try {
+      const response = await fetch('http://localhost:5000/api/interview-analyze', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setFeedback(data.feedback || 'Analysis failed. Please try again.');
+        setScore(null);
+      } else {
+        setFeedback(data.feedback || 'No feedback received.');
+        setScore(data.score || null);
+      }
+    } catch (err) {
+      setFeedback('Error uploading video. Please try again.');
+      setScore(null);
+    }
+    setLoading(false);
   };
 
   const handleNext = () => {
@@ -98,6 +126,7 @@ const AiInterview = () => {
     setFinished(true);
   };
 
+  // UI rendering
   if (finished) {
     return (
       <div className="aii-container">
@@ -107,74 +136,77 @@ const AiInterview = () => {
     );
   }
 
-  if (currentQuestion >= questions.length) {
-    return (
-      <div className="aii-container">
-        <h2>AI Interview Practice</h2>
-        <p className="aii-complete">🎉 You've completed all questions!</p>
-        <button className="aii-analyze-btn" onClick={handleFinish}>Finish</button>
-      </div>
-    );
-  }
-
   return (
     <div className="aii-container">
       <h2>AI Interview Practice</h2>
 
-      <div className="aii-question-box">
-        <span className="question-number" style={{ fontWeight: 'bold', marginRight: 6 }}>
-          Question {currentQuestion + 1}:
-        </span>
-        <span className="question-text">{questions[currentQuestion] || "Question not found!"}</span>
+      <div style={{ marginBottom: 16 }}>
+        <label htmlFor="role-select" style={{ fontWeight: 'bold', marginRight: 8 }}>Role:</label>
+        <select id="role-select" value={role} onChange={handleRoleChange}>
+          {roles.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+        </select>
       </div>
 
-      <div className="aii-btn-row">
-        <button className="aii-btn" onClick={startRecording} disabled={recording}>
-          Record Video
-        </button>
-        <button className="aii-btn" onClick={stopRecording} disabled={!recording}>
-          Stop Recording
-        </button>
-      </div>
+      {!role && <p>Please select a role to begin.</p>}
 
-      <div className="aii-upload-row">
-        <input type="file" accept="video/*" onChange={handleFileChange} />
-      </div>
+      {role && questions.length > 0 && currentQuestion < questions.length && (
+        <>
+          <div className="aii-question-box">
+            <span className="question-number" style={{ fontWeight: 'bold', marginRight: 6 }}>
+              Question {currentQuestion + 1}:
+            </span>
+            <span className="question-text">{questions[currentQuestion] || "Question not found!"}</span>
+          </div>
 
-      {videoURL && (
-        <video src={videoURL} controls width="400" className="aii-video" />
-      )}
+          <div className="aii-btn-row">
+            <button className="aii-btn" onClick={startRecording} disabled={recording}>
+              Record Video
+            </button>
+            <button className="aii-btn" onClick={stopRecording} disabled={!recording}>
+              Stop Recording
+            </button>
+          </div>
 
-      <form onSubmit={handleAnalyze}>
-        <button className="aii-analyze-btn" type="submit" disabled={loading || !videoFile}>
-          {loading ? 'Analyzing...' : 'Analyze Video'}
-        </button>
-      </form>
+          <div className="aii-upload-row">
+            <input type="file" accept="video/*" onChange={handleFileChange} />
+          </div>
 
-      {score !== null && (
-        <div className="aii-score">
-          <strong>Score: {score}/100</strong>
-        </div>
-      )}
+          {videoURL && (
+            <video src={videoURL} controls width="400" className="aii-video" />
+          )}
 
-      {feedback && (
-        <div className="aii-feedback">
-          <strong>{feedback}</strong>
-          {currentQuestion < questions.length - 1 && (
-            <div>
-              <button className="aii-next-btn" onClick={handleNext}>
-                Next Question
-              </button>
+          <form onSubmit={handleAnalyze}>
+            <button className="aii-analyze-btn" type="submit" disabled={loading || !videoFile}>
+              {loading ? 'Analyzing...' : 'Analyze Video'}
+            </button>
+          </form>
+
+          {score !== null && (
+            <div className="aii-score">
+              <strong>Score: {score}/100</strong>
             </div>
           )}
-          {currentQuestion === questions.length - 1 && (
-            <div>
-              <button className="aii-next-btn" onClick={handleFinish}>
-                Finish
-              </button>
+
+          {feedback && (
+            <div className="aii-feedback">
+              <strong>{feedback}</strong>
+              {currentQuestion < questions.length - 1 && (
+                <div>
+                  <button className="aii-next-btn" onClick={handleNext}>
+                    Next Question
+                  </button>
+                </div>
+              )}
+              {currentQuestion === questions.length - 1 && (
+                <div>
+                  <button className="aii-next-btn" onClick={handleFinish}>
+                    Finish
+                  </button>
+                </div>
+              )}
             </div>
           )}
-        </div>
+        </>
       )}
 
       <video ref={videoRef} style={{ display: 'none' }} />
