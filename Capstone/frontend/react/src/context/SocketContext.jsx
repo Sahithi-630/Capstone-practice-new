@@ -58,6 +58,23 @@ export const SocketProvider = ({ children }) => {
                 });
             });
 
+            // Handle online users
+            newSocket.on('user_online', (data) => {
+                setOnlineUsers(prev => new Set([...prev, data.userId]));
+            });
+
+            newSocket.on('user_offline', (data) => {
+                setOnlineUsers(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(data.userId);
+                    return newSet;
+                });
+            });
+
+            newSocket.on('online_users', (data) => {
+                setOnlineUsers(new Set(data.userIds));
+            });
+
             return () => {
                 newSocket.close();
             };

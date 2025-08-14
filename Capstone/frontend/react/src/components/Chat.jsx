@@ -11,9 +11,12 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [typingTimeout, setTypingTimeout] = useState(null);
+    const [showNewChatModal, setShowNewChatModal] = useState(false);
+    const [availableUsers, setAvailableUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const messagesEndRef = useRef(null);
     const { user } = useAuth();
-    const { socket, sendMessage, startTyping, stopTyping, typingUsers } = useSocket();
+    const { socket, sendMessage, startTyping, stopTyping, typingUsers, onlineUsers } = useSocket();
 
     // Fetch conversations on component mount
     useEffect(() => {
@@ -46,6 +49,33 @@ const Chat = () => {
             setConversations(response.data.conversations);
         } catch (error) {
             console.error('Error fetching conversations:', error);
+        }
+    };
+
+    const fetchAvailableUsers = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/users/following');
+            setAvailableUsers(response.data.following || []);
+        } catch (error) {
+            console.error('Error fetching available users:', error);
+            // Fallback: try to get all users
+            try {
+                const allUsersResponse = await axios.get('http://localhost:5000/api/users/all');
+                setAvailableUsers(allUsersResponse.data.users || []);
+            } catch (fallbackError) {
+                console.error('Error fetching all users:', fallbackError);
+            }
+        }
+    };
+
+    const startNewConversation = async (userId) => {
+        try {
+            // Fetch messages for this user (will create conversation if doesn't exist)
+            await fetchMessages(userId);
+            setShowNewChatModal(false);
+            setSearchQuery('');
+        } catch (error) {
+            console.error('Error starting new conversation:', error);
         }
     };
 
@@ -143,6 +173,16 @@ const Chat = () => {
             <div className="conversations-sidebar">
                 <div className="sidebar-header">
                     <h3>Messages</h3>
+                    <button
+                        className="new-chat-btn"
+                        onClick={() => {
+                            setShowNewChatModal(true);
+                            fetchAvailableUsers();
+                        }}
+                        title="Start new conversation"
+                    >
+                        ✏️
+                    </button>
                 </div>
                 <div className="conversations-list">
                     {conversations.map(conversation => (
@@ -159,7 +199,9 @@ const Chat = () => {
                                         {conversation.user.fullName?.charAt(0) || conversation.user.username?.charAt(0)}
                                     </div>
                                 )}
-                                {conversation.user.isOnline && <div className="online-indicator"></div>}
+                                {(conversation.user.isOnline || onlineUsers.has(conversation._id)) && (
+                                    <div className="online-indicator"></div>
+                                )}
                             </div>
                             <div className="conversation-info">
                                 <div className="conversation-header">
@@ -278,6 +320,67 @@ const Chat = () => {
                     </div>
                 )}
             </div>
+
+            {/* New Chat Modal */}
+            {showNewChatModal && (
+                <div className="modal-overlay" onClick={() => setShowNewChatModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Start New Conversation</h3>
+                            <button
+                                className="modal-close"
+                                onClick={() => setShowNewChatModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="search-input"
+                            />
+                            <div className="users-list">
+                                {availableUsers
+                                    .filter(user =>
+                                        user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+                                    )
+                                    .map(user => (
+                                        <div
+                                            key={user._id}
+                                            className="user-item"
+                                            onClick={() => startNewConversation(user._id)}
+                                        >
+                                            <div className="user-avatar">
+                                                {user.profilePicture ? (
+                                                    <img src={user.profilePicture} alt={user.fullName} />
+                                                ) : (
+                                                    <div className="avatar-placeholder">
+                                                        {user.fullName?.charAt(0) || user.username?.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="user-info">
+                                                <div className="user-name">{user.fullName || user.username}</div>
+                                                <div className="user-username">@{user.username}</div>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
+                                {availableUsers.length === 0 && (
+                                    <div className="no-users">
+                                        <p>No users available to chat with.</p>
+                                        <p>Follow some users to start conversations!</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

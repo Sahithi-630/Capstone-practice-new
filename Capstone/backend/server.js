@@ -67,7 +67,7 @@ app.use('/api', jobBoardRouter);
 // Socket.IO configuration
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"], // React dev server
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:5177', 'http://localhost:3000'], // React dev server
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -115,6 +115,13 @@ io.on('connection', (socket) => {
 
   // Join user to their personal room
   socket.join(socket.userId);
+
+  // Broadcast user online status
+  socket.broadcast.emit('user_online', { userId: socket.userId });
+
+  // Send current online users to the new user
+  const onlineUserIds = Array.from(connectedUsers.keys());
+  socket.emit('online_users', { userIds: onlineUserIds });
 
   // Handle sending messages
   socket.on('send_message', async (data) => {
@@ -172,6 +179,9 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`User ${socket.username} disconnected`);
     connectedUsers.delete(socket.userId);
+
+    // Broadcast user offline status
+    socket.broadcast.emit('user_offline', { userId: socket.userId });
 
     // Update user offline status
     User.findByIdAndUpdate(socket.userId, {

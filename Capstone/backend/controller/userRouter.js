@@ -306,4 +306,28 @@ router.put('/profile', auth, async (req, res) => {
     }
 });
 
+// Get all users (for chat functionality)
+router.get('/all', auth, async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+
+        // Get all users except current user
+        const users = await User.find({
+            _id: { $ne: currentUserId },
+            isDeleted: { $ne: true }
+        })
+        .select('username fullName profilePicture isOnline lastSeen')
+        .limit(50)
+        .sort({ username: 1 });
+
+        res.json({
+            message: 'Users retrieved successfully',
+            users
+        });
+    } catch (error) {
+        console.error('Get all users error:', error);
+        res.status(500).json({ message: 'Server error while fetching users' });
+    }
+});
+
 module.exports = router;
