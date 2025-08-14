@@ -31,19 +31,52 @@ body {
 }
 
 .dashboard-header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
   font-size: 2.2rem;
   font-weight: 700;
   color: #2d3748;
-  margin-bottom: 24px;
-  text-align: center;
+  margin: 0;
 }
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin: 4px 0 0 0;
+}
+
+
 
 .dashboard-cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-columns: repeat(2, 1fr); /* 2 columns for 4 cards */
   gap: 24px;
   justify-items: center;
   align-items: stretch;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Dashboard Feed */
+.dashboard-feed {
+  margin-top: 32px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .dashboard-cards {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+    max-width: 400px;
+  }
+
+  .dashboard-feed {
+    margin-top: 24px;
+  }
 }
 
 .dashboard-card {

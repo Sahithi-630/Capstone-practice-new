@@ -1,19 +1,6 @@
 import React, { useState } from 'react';
+import useSoundEffects from '../hooks/useSoundEffects';
 import '../styles/companyWiseQuestions.css';
-
-// ...existing questions and companyQuestionsMap...
-const companies = [
-  "Apple",
-  "Google",
-  "Microsoft",
-  "Amazon",
-  "Facebook",
-  "Netflix",
-  "Adobe",
-  "Intel",
-  "Tesla",
-  "Salesforce"
-];
 
 // --- Apple ---
 const appleQuestions =[
@@ -1234,6 +1221,19 @@ const salesforceQuestions = [
 ]
 
 
+const companies = [
+  "Apple",
+  "Google",
+  "Microsoft",
+  "Amazon",
+  "Facebook",
+  "Netflix",
+  "Adobe",
+  "Intel",
+  "Tesla",
+  "Salesforce"
+];
+
 const companyQuestionsMap = {
   Apple: appleQuestions,
   Google: googleQuestions,
@@ -1247,20 +1247,53 @@ const companyQuestionsMap = {
   Salesforce: salesforceQuestions
 };
 
-
 const CompanyWiseQuestions = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [randomQuestions, setRandomQuestions] = useState([]);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const sounds = useSoundEffects();
+
+  // Helper to get N random, non-repeating questions
+  function getRandomQuestions(arr, n = 5) {
+    const shuffled = arr.slice().sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(n, arr.length));
+  }
+
+  React.useEffect(() => {
+    if (selectedCompany) {
+      const questions = companyQuestionsMap[selectedCompany];
+      if (questions && questions.length > 0) {
+        setRandomQuestions(getRandomQuestions(questions, 5));
+      }
+    }
+  }, [selectedCompany]);
 
   if (!selectedCompany) {
     return (
       <div className="cwq-container">
-        <h2 className="cwq-title">Select a Company</h2>
+        <div className="cwq-header">
+          <h2 className="cwq-title">Select a Company</h2>
+          <button
+            className="cwq-sound-toggle"
+            onClick={() => {
+              setSoundEnabled(!soundEnabled);
+              if (!soundEnabled) sounds.click();
+            }}
+            title={soundEnabled ? "Disable Sound Effects" : "Enable Sound Effects"}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
+        </div>
         <div className="cwq-company-list">
           {companies.map(company => (
             <button
               key={company}
               className="cwq-company-btn"
-              onClick={() => setSelectedCompany(company)}
+              onClick={() => {
+                if (soundEnabled) sounds.click();
+                setSelectedCompany(company);
+              }}
+              onMouseEnter={() => soundEnabled && sounds.hover()}
             >
               {company}
             </button>
@@ -1270,14 +1303,14 @@ const CompanyWiseQuestions = () => {
     );
   }
 
-  const questions = companyQuestionsMap[selectedCompany];
-
-  if (questions && questions.length > 0) {
+  if (randomQuestions && randomQuestions.length > 0) {
     return (
       <MCQTest
-        questions={questions}
+        questions={randomQuestions}
         company={selectedCompany}
         onBack={() => setSelectedCompany(null)}
+        soundEnabled={soundEnabled}
+        setSoundEnabled={setSoundEnabled}
       />
     );
   }
@@ -1296,33 +1329,63 @@ const CompanyWiseQuestions = () => {
   );
 };
 
-const MCQTest = ({ questions, company, onBack }) => {
+const MCQTest = ({ questions, company, onBack, soundEnabled, setSoundEnabled }) => {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [answerFeedback, setAnswerFeedback] = useState(null);
+  const sounds = useSoundEffects();
 
-  const handleOptionClick = (option) => setSelected(option);
+  const handleOptionClick = (option) => {
+    if (soundEnabled) sounds.click();
+    setSelected(option);
+  };
 
   const handleNext = () => {
-    if (selected === questions[current].answer) setScore(score + 1);
-    setSelected(null);
-    if (current < questions.length - 1) setCurrent(current + 1);
-    else setShowScore(true);
+    const isCorrect = selected === questions[current].answer;
+
+    // Play sound based on answer correctness
+    if (isCorrect) {
+      if (soundEnabled) sounds.correct();
+      setScore(score + 1);
+    } else {
+      if (soundEnabled) sounds.wrong();
+    }
+
+    // Show feedback briefly
+    setAnswerFeedback(isCorrect ? 'correct' : 'wrong');
+
+    // Delay navigation to let user hear the feedback sound
+    setTimeout(() => {
+      setAnswerFeedback(null);
+      setSelected(null);
+
+      if (current < questions.length - 1) {
+        if (soundEnabled) sounds.navigation();
+        setCurrent(current + 1);
+      } else {
+        if (soundEnabled) sounds.completion();
+        setShowScore(true);
+      }
+    }, 1000);
   };
 
   const handlePrev = () => {
     if (current > 0) {
+      if (soundEnabled) sounds.navigation();
       setCurrent(current - 1);
       setSelected(null);
     }
   };
 
   const handleRestart = () => {
+    if (soundEnabled) sounds.click();
     setCurrent(0);
     setSelected(null);
     setScore(0);
     setShowScore(false);
+    setAnswerFeedback(null);
   };
 
   if (showScore) {
@@ -1330,10 +1393,21 @@ const MCQTest = ({ questions, company, onBack }) => {
       <div className="cwq-container text-center">
         <h2 className="cwq-title">Test Completed!</h2>
         <p className="cwq-score">Your Score: {score} / {questions.length}</p>
-        <button className="cwq-company-btn" onClick={handleRestart}>
+        <button
+          className="cwq-company-btn"
+          onClick={handleRestart}
+          onMouseEnter={() => soundEnabled && sounds.hover()}
+        >
           Restart Test
         </button>
-        <button className="cwq-back-btn" onClick={onBack}>
+        <button
+          className="cwq-back-btn"
+          onClick={() => {
+            if (soundEnabled) sounds.click();
+            onBack();
+          }}
+          onMouseEnter={() => soundEnabled && sounds.hover()}
+        >
           Back to Companies
         </button>
       </div>
@@ -1348,14 +1422,20 @@ const MCQTest = ({ questions, company, onBack }) => {
         Back to Companies
       </button>
       <h2 className="cwq-title">{company} Interview MCQ</h2>
-      <div className="cwq-question-card">
+      <div className={`cwq-question-card ${answerFeedback ? `feedback-${answerFeedback}` : ''}`}>
         <p className="cwq-question">{current + 1}. {q.question}</p>
+        {answerFeedback && (
+          <div className={`cwq-feedback ${answerFeedback}`}>
+            {answerFeedback === 'correct' ? '✅ Correct!' : '❌ Wrong!'}
+          </div>
+        )}
         <ul className="cwq-options-list">
           {q.options.map((opt, idx) => (
             <li key={idx}>
               <button
                 className={`cwq-option-btn${selected === opt ? ' selected' : ''}`}
                 onClick={() => handleOptionClick(opt)}
+                onMouseEnter={() => soundEnabled && sounds.hover()}
               >
                 {opt}
               </button>
@@ -1368,6 +1448,7 @@ const MCQTest = ({ questions, company, onBack }) => {
           onClick={handlePrev}
           disabled={current === 0}
           className="cwq-nav-btn"
+          onMouseEnter={() => soundEnabled && current !== 0 && sounds.hover()}
         >
           Previous
         </button>
@@ -1375,6 +1456,7 @@ const MCQTest = ({ questions, company, onBack }) => {
           onClick={handleNext}
           disabled={selected === null}
           className="cwq-nav-btn primary"
+          onMouseEnter={() => soundEnabled && selected !== null && sounds.hover()}
         >
           {current === questions.length - 1 ? "Finish" : "Next"}
         </button>
@@ -1384,4 +1466,3 @@ const MCQTest = ({ questions, company, onBack }) => {
 };
 
 export default CompanyWiseQuestions;
-
