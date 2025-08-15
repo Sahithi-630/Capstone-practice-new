@@ -14,6 +14,8 @@ const Chat = () => {
     const [showNewChatModal, setShowNewChatModal] = useState(false);
     const [availableUsers, setAvailableUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [showChatArea, setShowChatArea] = useState(false);
     const messagesEndRef = useRef(null);
     const { user } = useAuth();
     const { socket, sendMessage, startTyping, stopTyping, typingUsers, onlineUsers } = useSocket();
@@ -42,6 +44,19 @@ const Chat = () => {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    // Handle window resize for mobile detection
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const fetchConversations = async () => {
         try {
@@ -85,6 +100,11 @@ const Chat = () => {
             const response = await axios.get(`http://localhost:5000/api/chat/conversation/${userId}`);
             setMessages(response.data.messages);
             setSelectedConversation(response.data.otherUser);
+
+            // On mobile, show chat area when conversation is selected
+            if (isMobile) {
+                setShowChatArea(true);
+            }
         } catch (error) {
             console.error('Error fetching messages:', error);
         } finally {
@@ -145,6 +165,11 @@ const Chat = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const handleBackToConversations = () => {
+        setShowChatArea(false);
+        setSelectedConversation(null);
+    };
+
     const formatTime = (timestamp) => {
         return new Date(timestamp).toLocaleTimeString([], { 
             hour: '2-digit', 
@@ -170,7 +195,7 @@ const Chat = () => {
     return (
         <div className="chat-container">
             {/* Conversations Sidebar */}
-            <div className="conversations-sidebar">
+            <div className={`conversations-sidebar ${isMobile && showChatArea ? 'hidden' : ''}`}>
                 <div className="sidebar-header">
                     <h3>Messages</h3>
                     <button
@@ -225,11 +250,16 @@ const Chat = () => {
             </div>
 
             {/* Chat Area */}
-            <div className="chat-area">
+            <div className={`chat-area ${isMobile && showChatArea ? 'active' : ''}`}>
                 {selectedConversation ? (
                     <>
                         {/* Chat Header */}
                         <div className="chat-header">
+                            {isMobile && (
+                                <button className="back-button" onClick={handleBackToConversations}>
+                                    ←
+                                </button>
+                            )}
                             <div className="chat-user-info">
                                 <div className="chat-avatar">
                                     {selectedConversation.profilePicture ? (

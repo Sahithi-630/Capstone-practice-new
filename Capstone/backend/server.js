@@ -53,6 +53,7 @@ const resumeReviewRouter = require('./controller/resumeReviewRouter');
 const aiInterviewRouter = require('./controller/AiInterviewRouter');
 const companyWiseQuestionsRouter = require('./controller/companyWiseQuestionsRouter');
 const jobBoardRouter = require('./controller/jobBoardRouter');
+const companyQuestionsRouter = require('./controller/companyQuestionsRouter');
 
 // Use routers
 app.use('/api/auth', authRouter);
@@ -63,6 +64,7 @@ app.use('/api', resumeReviewRouter);
 app.use('/api', aiInterviewRouter);
 app.use('/api', companyWiseQuestionsRouter);
 app.use('/api', jobBoardRouter);
+app.use('/api/companies', companyQuestionsRouter);
 
 // Socket.IO configuration
 const io = socketIo(server, {
